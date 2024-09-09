@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastro de Comanda</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@^2.0/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .bg-custom {
+        background-image: url("/static/img/1801106.jpg");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+
+      .input-transparent {
+        background-color: rgba(
+          255,
+          255,
+          255,
+          0.8
+        ); /* Branco com 80% de opacidade */
+      }
+    </style>
+  </head>
+
+  <body class="bg-custom h-screen flex justify-center items-center">
+    <div class="w-full max-w-md p-6 bg-white rounded-lg shadow-md opacity-90">
+      <h1 class="text-2xl font-bold text-center mb-6">Cadastro de Comanda</h1>
+      <form class="space-y-4" action="/cadastro" method="POST">
+        <div>
+          <label for="nome" class="block text-sm font-medium text-gray-700">
+            Nome:
+          </label>
+          <input
+            type="text"
+            id="nome"
+            name="nome"
+            required
+            class="input-transparent form-input"
+          />
+        </div>
+
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700">
+            Email:
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            class="input-transparent form-input"
+          />
+        </div>
+
+        <div>
+          <label for="telefone" class="block text-sm font-medium text-gray-700">
+            Telefone:
+          </label>
+          <input
+            type="text"
+            id="telefone"
+            name="telefone"
+            required
+            class="input-transparent form-input"
+          />
+        </div>
+
+        <div>
+          <label for="senha" class="block text-sm font-medium text-gray-700">
+            Senha:
+          </label>
+          <input
+            type="password"
+            id="senha"
+            name="senha"
+            required
+            class="input-transparent form-input"
+          />
+        </div>
+
+        <button
+          type="submit"
+          class="w-full bg-red-600 text-white rounded-md p-2 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          Enviar
+        </button>
+      </form>
+    </div>
+  </body>
+</html>

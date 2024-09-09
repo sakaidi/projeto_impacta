@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Impacta Pub</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@^2.0/dist/tailwind.min.css" rel="stylesheet" />
+    <style>
+        .bg-custom {
+            background-image: url(/static/img/274192.jpg); /* Corrigindo o caminho da imagem de fundo */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .bg-semi-transparent {
+            background-color: rgba(0, 0, 0, 0.7); /* Preto com 70% de opacidade */
+        }
+    </style>
+</head>
+<body class="bg-custom bg-cover bg-center min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <nav class="bg-white dark:bg-gray-900">
+        <div class="max-w-screen-xl mx-auto flex justify-between items-center p-4">
+            <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse"> <!-- Corrigindo o caminho do link do logotipo -->
+                <img src="/static/img/logo2.png" class="h-8" alt="Impacta Pub Logo" />
+                <span class="text-2xl font-semibold dark:text-white">Impact Pub</span>
+            </a>
+            <div class="text-lg">
+                <a href="/login" class="text-gray-800 hover:text-gray-600">Login</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content Section -->
+    <div class="flex-1 flex items-center justify-center p-4">
+        <div class="bg-semi-transparent rounded-lg shadow-lg p-8 w-full max-w-md text-center text-white">
+            <h1 class="text-3xl font-bold mb-4">Bem-vindo ao Impacta Pub</h1>
+            <p class="text-gray-300 mb-6">Cadastre  faça seu pedido de forma rápida e fácil!</p>
+            
+            <!-- Botão de iniciar cadastro -->
+            <div class="mb-6">
+                <a href="./cadastro" class="border border-yellow-400 text-orange-400 rounded-md px-4 py-2 bg-transparent hover:bg-yellow-600 hover:text-white transition duration-200">
+                    Iniciar cadastro
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
