@@ -1,13 +1,10 @@
 import psycopg2
-import os
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Blueprint, render_template, request, redirect, url_for, session
 from functools import wraps
 import bcrypt
 
-app = Flask(__name__, static_folder='static')
-app.secret_key = os.urandom(24)
+main = Blueprint('main', __name__)
 
-# Função para criar uma nova conexão com o banco de dados
 def get_db_connection():
     conn = psycopg2.connect(
         database="sistema_comandas_db",
@@ -18,26 +15,23 @@ def get_db_connection():
     )
     return conn
 
-# Decorador para proteger as rotas
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
-            return redirect(url_for('login'))
+            return redirect(url_for('main.login'))
         return f(*args, **kwargs)
     return decorated_function
 
-@app.route('/')
+@main.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/login', methods=['GET', 'POST'])
+@main.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email']
         senha = request.form['senha']
-        
-    
 
         try:
             conn = get_db_connection()
@@ -58,10 +52,7 @@ def login():
 
     return render_template('login.html')
 
-
-
-
-@app.route('/cadastro', methods=['GET', 'POST'])
+@main.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
     if request.method == 'POST':
         nome = request.form['nome']
@@ -89,7 +80,3 @@ def cadastro():
             return f"Erro ao inserir dados: {str(e)}", 500
 
     return render_template('cadastro.html')
-  
-
-if __name__ == "__main__":
-    app.run(debug=True)
