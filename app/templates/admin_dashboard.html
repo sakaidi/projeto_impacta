@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel Administrativo</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <div class="container mx-auto py-8">
+    <h1 class="text-2xl font-bold mb-6">Painel Administrativo</h1>
+    <p class="mb-4">Bem-vindo ao painel administrativo. Aqui você pode gerenciar o sistema.</p>
+    <a href="{{ url_for('main.listar_clientes') }}" class="bg-blue-500 text-white py-2 px-4 rounded inline-block">Listar Clientes</a>
+    <a href="{{ url_for('main.listar_pedidos_admin') }}" class="bg-blue-500 text-white py-2 px-4 rounded inline-block ml-4">Listar Pedidos</a>
+    <a href="{{ url_for('main.cadastrar_produto') }}" class="bg-blue-500 text-white py-2 px-4 rounded inline-block ml-4">Cadastrar Produto</a>
+    <a href="{{ url_for('main.login') }}" class="bg-red-500 text-white py-2 px-4 rounded inline-block ml-4">Sair</a>
+  </div>
+</body>
+</html>
