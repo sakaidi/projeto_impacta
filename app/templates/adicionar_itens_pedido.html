@@ -1,60 +1,121 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adicionar Itens ao Pedido</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
     <style>
-      .bg-custom {
-        background-image: url(/app/static/img/5863522.jpg); 
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: center;
-      }
+        .bg-custom {
+            background-image: url("/static/img/5863522.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            min-height: 100vh;
+        }
 
-      .btn {
-        padding: 10px 20px;
-        border-radius: 5px;
-        margin-top: 10px;
-      }
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.9); /* Caixa transparente */
+            backdrop-filter: blur(10px); /* Efeito de desfoque ao fundo */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        th, td {
+            text-align: center;
+        }
+
+        .button {
+            background-color: #3b82f6; /* Azul padrão */
+            color: white;
+            padding: 0.5rem 1rem; /* Padding ajustado */
+            border-radius: 0.375rem; /* Bordas arredondadas */
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #2563eb; /* Azul mais escuro no hover */
+        }
+
+        .input {
+            border: 1px solid #d1d5db; /* Cinza claro */
+            border-radius: 0.375rem; /* Bordas arredondadas */
+            padding: 0.5rem; /* Padding ajustado */
+            width: 100%; /* Largura total */
+        }
     </style>
-  </head>
+</head>
 
-  <body class="bg-gray-100 min-h-screen flex items-center justify-center">
-    <div class="container mx-auto py-8">
-      <div class="max-w-md mx-auto bg-white p-8 rounded shadow-md">
-        <h1 class="text-3xl font-bold mb-6 text-center">
-          Adicionar Itens ao Pedido
-        </h1>
-        <form
-          method="POST"
-          action="/pedido/{{ id_pedido }}/itens"
-          class="text-center"
-        >
-          <button
-            type="submit"
-            class="bg-blue-500 hover:bg-blue-700 text-white btn inline-block"
-          >
-            Adicionar Itens
-          </button>
+<body class="bg-custom">
+    <div class="form-container">
+        <h1 class="text-2xl font-bold text-center mb-4">Adicionar Itens ao Pedido</h1>
+
+        <!-- Formulário para adicionar itens -->
+        <form method="POST" class="space-y-4">
+            <div>
+                <label class="block text-gray-700" for="id_produto">Selecione um Produto:</label>
+                <select name="id_produto" id="id_produto" required class="input" aria-required="true">
+                    {% for produto in produtos %}
+                        <option value="{{ produto[0] }}">{{ produto[1] }} - R$ {{ produto[2] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-gray-700" for="quantidade">Quantidade:</label>
+                <input type="number" name="quantidade" id="quantidade" required min="1" class="input" aria-required="true" />
+            </div>
+
+            <button type="submit" name="adicionar" class="button w-full">Adicionar Item</button>
         </form>
-        <form
-          method="POST"
-          action="/pedido/{{ id_pedido }}/finalizar"
-          class="text-center"
-        >
-          <button
-            type="submit"
-            class="bg-green-500 hover:bg-green-700 text-white btn mt-4 inline-block"
-          >
-            Finalizar Pedido
-          </button>
-        </form>
-      </div>
     </div>
-  </body>
+
+    <div class="table-container max-w-4xl mx-auto mt-8">
+        <h2 class="text-xl font-bold text-center mb-4">Itens Adicionados</h2>
+        <table class="min-w-full bg-white rounded shadow-md">
+            <thead>
+                <tr>
+                    <th class="py-2">Produto</th>
+                    <th class="py-2">Quantidade</th>
+                    <th class="py-2">Preço Unitário</th>
+                    <th class="py-2">Total</th>
+                    <th class="py-2">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in itens_adicionados %}
+                    <tr class="border-b">
+                        <td class="py-2">{{ item[1] }}</td>
+                        <td class="py-2">
+                            <form method="POST" class="inline">
+                                <input type="hidden" name="id_item" value="{{ item[0] }}">
+                                <input type="number" name="quantidade" value="{{ item[2] }}" min="1" required class="input inline w-20" aria-required="true" />
+                                <button type="submit" name="editar" class="button inline">Editar</button>
+                            </form>
+                        </td>
+                        <td class="py-2">R$ {{ item[3] }}</td>
+                        <td class="py-2">R$ {{ item[2] * item[3] }}</td>
+                        <td class="py-2">
+                            <form method="POST" class="inline">
+                                <input type="hidden" name="id_item" value="{{ item[0] }}">
+                                <button type="submit" name="excluir" class="button bg-red-500 hover:bg-red-600">Excluir</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-center mt-4">
+        <form method="POST" action="{{ url_for('main.finalizar_pedido', id_pedido=id_pedido) }}">
+            <button type="submit" class="button">Finalizar Pedido</button>
+        </form>
+    </div>
+</body>
+
 </html>
