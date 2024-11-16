@@ -1,0 +1,87 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+<div class="container mt-4">
+    <h2 class="mb-4">Pedidos por Cliente</h2>
+
+    <!-- Formulário de Filtro -->
+    <form method="GET" action="{{ url_for('main.pedidos_por_cliente') }}" class="mb-4">
+        <div class="form-row">
+            <div class="col">
+                <input type="date" name="data_inicial" class="form-control" placeholder="Data Inicial">
+            </div>
+            <div class="col">
+                <input type="date" name="data_final" class="form-control" placeholder="Data Final">
+            </div>
+            <div class="col">
+                <select name="status" class="form-control">
+                    <option value="">Selecione o Status</option>
+                    <option value="pendente">Pendente</option>
+                    <option value="finalizado">Finalizado</option>
+                    <option value="pago">Pago</option>
+                </select>
+            </div>
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Tabela de Clientes e Pedidos -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for id_cliente, cliente in clientes.items() %}
+            <tr>
+                <td>{{ cliente.nome }}</td>
+                <td>
+                    <button class="btn btn-info" data-toggle="collapse" data-target="#detalhes-{{ id_cliente }}">
+                        Ver Detalhes
+                    </button>
+                </td>
+            </tr>
+            <tr id="detalhes-{{ id_cliente }}" class="collapse">
+                <td colspan="2">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>ID do Pedido</th>
+                                <th>Data do Pedido</th>
+                                <th>Valor Total</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pedido in cliente.pedidos %}
+                            <tr>
+                                <td>{{ pedido.id_pedido }}</td>
+                                <td>{{ pedido.data_pedido }}</td>
+                                <td>R$ {{ pedido.valor_total }}</td>
+                                <td>{{ pedido.status }}</td>
+                                <td>
+                                    {% if pedido.status != 'pago' %}
+                                    <form action="{{ url_for('main.pedidos_por_cliente') }}" method="POST" style="display:inline;">
+                                        <input type="hidden" name="id_pedido" value="{{ pedido.id_pedido }}">
+                                        <button type="submit" class="btn btn-success">Marcar como Pago</button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

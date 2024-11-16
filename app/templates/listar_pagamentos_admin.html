@@ -1,0 +1,39 @@
+<h2 class="text-xl font-semibold mb-4">Pedidos a Pagar (Admin)</h2>
+<table class="min-w-full bg-white border border-gray-200">
+    <thead>
+        <tr>
+            <th class="py-2 px-4 border-b">ID do Pedido</th>
+            <th class="py-2 px-4 border-b">Cliente</th>
+            <th class="py-2 px-4 border-b">Data do Pedido</th>
+            <th class="py-2 px-4 border-b">Status</th>
+            <th class="py-2 px-4 border-b">Valor Total</th>
+            <th class="py-2 px-4 border-b">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for pedido in pedidos %}
+            <tr>
+                <td class="py-2 px-4 border-b">{{ pedido[0] }}</td>
+                <td class="py-2 px-4 border-b">{{ pedido[1] }}</td>
+                <td class="py-2 px-4 border-b">{{ pedido[2] }}</td>
+                <td class="py-2 px-4 border-b">{{ pedido[3] }}</td>
+                <td class="py-2 px-4 border-b">R$ {{ pedido[4] }}</td>
+                <td class="py-2 px-4 border-b">
+                    {% if pedido[3] != 'Pago' %}
+                        <form method="POST" action="{{ url_for('main.finalizar_pagamento', id_pedido=pedido[0]) }}">
+                            <button type="submit" class="bg-yellow-500 hover:bg-yellow-700 text-white py-1 px-3 rounded">
+                                Finalizar Pagamento
+                            </button>
+                        </form>
+                    {% else %}
+                        <span class="text-green-500">Pago</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6" class="py-2 px-4 text-center border-b">Nenhum pedido a pagar encontrado.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

@@ -12,9 +12,10 @@
     <div class="p-6">
       <h1 class="text-2xl font-bold mb-4">Painel Administrativo</h1>
       <nav class="mt-6">
-        <a href="#" class="block py-2 px-4 hover:bg-blue-500 hover:text-white active" id="clientes-link" onclick="loadPage('clientes')">Listar Clientes</a>
+        <a href="#" class="block py-2 px-4 hover:bg-blue-500 hover:text-white" id="clientes-link" onclick="loadPage('clientes')">Listar Clientes</a>
         <a href="#" class="block py-2 px-4 hover:bg-blue-500 hover:text-white" id="pedidos-link" onclick="loadPage('pedidos')">Listar Pedidos</a>
         <a href="#" class="block py-2 px-4 hover:bg-blue-500 hover:text-white" id="produtos-link" onclick="loadPage('produtos')">Cadastrar Produto</a>
+        <a href="#" class="block py-2 px-4 hover:bg-blue-500 hover:text-white" id="pagamentos-admin-link" onclick="loadPage('pagamentos')">Pagamentos (Admin)</a>
         <a href="{{ url_for('main.logout') }}" class="block py-2 px-4 text-red-600 hover:bg-red-200">Sair</a>
       </nav>
     </div>
@@ -29,35 +30,38 @@
 
   <script>
     function loadPage(page) {
-    $.ajax({
-        url: `/admin/${page}`,
+      $.ajax({
+        url: page === 'pagamentos' ? '/admin/pedidos_por_cliente' : `/admin/${page}`,
         type: 'GET',
         success: function(data) {
-            console.log("Dados recebidos:", data);  // Verifique os dados recebidos
-            $('#content').html(data);
-            setActiveLink(page);
+          console.log("Dados recebidos:", data);  // Verifique os dados recebidos
+          $('#content').html(data);
+          setActiveLink(page);
         },
         error: function(xhr, status, error) {
-            console.error("Erro ao carregar a página:", status, error);
-            $('#content').html('<p>Erro ao carregar a página. Tente novamente.</p>');
+          console.error("Erro ao carregar a página:", status, error);
+          $('#content').html('<p>Erro ao carregar a página. Tente novamente.</p>');
         }
-    });
-}
+      });
+    }
 
     function setActiveLink(page) {
-        // Remove a classe 'active' de todos os links
-        $('#clientes-link').removeClass('bg-blue-500 text-white');
-        $('#pedidos-link').removeClass('bg-blue-500 text-white');
-        $('#produtos-link').removeClass('bg-blue-500 text-white');
+      // Remove a classe 'active' de todos os links
+      $('#clientes-link').removeClass('bg-blue-500 text-white');
+      $('#pedidos-link').removeClass('bg-blue-500 text-white');
+      $('#produtos-link').removeClass('bg-blue-500 text-white');
+      $('#pagamentos-admin-link').removeClass('bg-blue-500 text-white');
 
-        // Adiciona a classe 'active' ao link correspondente
-        if (page === 'clientes') {
-            $('#clientes-link').addClass('bg-blue-500 text-white');
-        } else if (page === 'pedidos') {
-            $('#pedidos-link').addClass('bg-blue-500 text-white');
-        } else if (page === 'produtos') {
-            $('#produtos-link').addClass('bg-blue-500 text-white');
-        }
+      // Adiciona a classe 'active' ao link correspondente
+      if (page === 'clientes') {
+        $('#clientes-link').addClass('bg-blue-500 text-white');
+      } else if (page === 'pedidos') {
+        $('#pedidos-link').addClass('bg-blue-500 text-white');
+      } else if (page === 'produtos') {
+        $('#produtos-link').addClass('bg-blue-500 text-white');
+      } else if (page === 'pagamentos') {
+        $('#pagamentos-admin-link').addClass('bg-blue-500 text-white');
+      }
     }
   </script>
 </body>

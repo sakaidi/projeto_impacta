@@ -8,24 +8,30 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
     <style>
         .bg-custom {
-            background-image: url("/static/img/5863522.jpg"); /* Corrigido o caminho para o uso correto */
+            background-image: url("/static/img/5863522.jpg");
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
         }
 
         .form-container {
-            background-color: rgba(255, 255, 255, 0.8); /* Fundo com leve transparência */
+            background-color: rgba(255, 255, 255, 0.8);
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
     </style>
+    <script>
+        function togglePedidos() {
+            const pedidosSection = document.getElementById('pedidos-section');
+            pedidosSection.classList.toggle('hidden');
+        }
+    </script>
 </head>
 
 <body class="bg-custom min-h-screen flex items-center justify-center">
-    <div class="container mx-auto py-8 flex items-center justify-center">
-        <div class="form-container max-w-md w-full">
+    <div class="container mx-auto py-8 flex items-center justify-center flex-col">
+        <div class="form-container max-w-md w-full mb-8">
             <h1 class="text-3xl font-bold mb-6 text-center">Criar Pedido</h1>
             <form method="POST" action="{{ url_for('main.fazer_pedido') }}" class="text-center">
                 <input type="hidden" name="id_cliente" value="{{ id_cliente }}" />
@@ -34,6 +40,40 @@
                     Iniciar Pedido
                 </button>
             </form>
+        </div>
+
+        <div class="form-container max-w-md w-full mb-4">
+            <button onclick="togglePedidos()" class="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded w-full">
+                Meus Pedidos
+            </button>
+        </div>
+
+        <div id="pedidos-section" class="form-container max-w-md w-full hidden">
+            <h2 class="text-2xl font-bold mb-4 text-center">Meus Pedidos</h2>
+            <table class="min-w-full bg-white border border-gray-200">
+                <thead>
+                    <tr>
+                        <th class="py-2 px-4 border-b">ID do Pedido</th>
+                        <th class="py-2 px-4 border-b">Data do Pedido</th>
+                        <th class="py-2 px-4 border-b">Status</th>
+                        <th class="py-2 px-4 border-b">Valor Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pedido in pedidos %}
+                        <tr>
+                            <td class="py-2 px-4 border-b">{{ pedido[0] }}</td>
+                            <td class="py-2 px-4 border-b">{{ pedido[1] }}</td>
+                            <td class="py-2 px-4 border-b">{{ pedido[2] }}</td>
+                            <td class="py-2 px-4 border-b">R$ {{ pedido[3] }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="py-2 px-4 text-center border-b">Nenhum pedido encontrado.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </body>

@@ -2,6 +2,8 @@ import psycopg2
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from functools import wraps
 import bcrypt
+import logging
+from flask import current_app
 
 main = Blueprint('main', __name__)
 
@@ -184,14 +186,12 @@ def cadastrar_produto():
 
     return render_template('partials/cadastrar_produto.html')
 
-
-
 @main.route('/fazer_pedido', methods=['GET', 'POST'])
 @login_required
 def fazer_pedido():
+    id_cliente = session['user_id']
+    
     if request.method == 'POST':
-        id_cliente = session['user_id']
-
         try:
             with get_db_connection() as conn:
                 with conn.cursor() as cur:
@@ -205,7 +205,22 @@ def fazer_pedido():
             flash(f"Erro ao criar pedido: {str(e)}", "error")
             return redirect(url_for('main.fazer_pedido'))
 
-    return render_template('fazer_pedido.html')
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT p.id_pedido, p.data_pedido, p.status, p.valor_total
+                    FROM Pedido p
+                    WHERE p.id_cliente = %s
+                """, (id_cliente,))
+                pedidos = cur.fetchall()
+
+        return render_template('fazer_pedido.html', pedidos=pedidos, id_cliente=id_cliente)
+
+    except Exception as e:
+        logging.error(f"Erro ao buscar pedidos: {str(e)}")
+        flash("Erro ao buscar pedidos. Tente novamente.", "error")
+        return redirect(url_for('main.index'))
 
 @main.route('/pedido/<int:id_pedido>/itens', methods=['GET', 'POST'])
 @login_required
@@ -353,6 +368,94 @@ def finalizar_pedido(id_pedido):
     except Exception as e:
         flash(f"Erro ao finalizar pedido: {str(e)}", "error")
         return redirect(url_for('main.adicionar_itens_pedido', id_pedido=id_pedido))
+
+# Renomeando a função para evitar conflito
+@main.route('/finalizar_pagamento/<int:id_pedido>', methods=['POST'])
+@login_required
+def finalizar_pagamento(id_pedido):
+    if not session.get('is_admin'):
+        flash("Acesso negado!", "error")
+        return redirect(url_for('main.index'))
+
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    UPDATE Pedido
+                    SET status = 'Pago', data_pagamento = NOW()
+                    WHERE id_pedido = %s
+                """, (id_pedido,))
+                conn.commit()
+
+                flash("Pedido marcado como pago com sucesso!", "success")
+        return redirect(url_for('main.listar_pagamentos'))
+
+    except Exception as e:
+        flash(f"Erro ao marcar pagamento: {str(e)}", "error")
+        return redirect(url_for('main.listar_pagamentos'))      
+    
+         
+@main.route('/admin/pedidos_por_cliente', methods=['GET'])
+@main.route('/admin/pedidos_por_cliente', methods=['GET', 'POST'])
+@login_required
+def pedidos_por_cliente():
+    current_app.logger.info(f"Usuário acessando pedidos_por_cliente: {session.get('user_id')}")
+    if request.method == 'POST':
+        id_pedido = request.form.get('id_pedido')
+        try:
+            with get_db_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute("""
+                        UPDATE Pedido
+                        SET status = 'pago'
+                        WHERE id_pedido = %s
+                    """, (id_pedido,))
+                    conn.commit()
+                    current_app.logger.info(f"Pedido {id_pedido} marcado como pago.")
+        except Exception as e:
+            current_app.logger.error(f"Erro ao marcar pedido como pago: {str(e)}")
+    
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                # Obter todos os clientes e seus pedidos
+                cur.execute("""
+                    SELECT c.id_cliente, c.nome, p.id_pedido, p.data_pedido, p.valor_total, p.status
+                    FROM Cliente c
+                    LEFT JOIN Pedido p ON c.id_cliente = p.id_cliente
+                """)
+                pedidos = cur.fetchall()
+
+                # Organizar os pedidos por cliente
+                clientes = {}
+                for pedido in pedidos:
+                    id_cliente = pedido[0]
+                    nome_cliente = pedido[1]
+                    id_pedido = pedido[2]
+                    data_pedido = pedido[3]
+                    valor_total = pedido[4]
+                    status = pedido[5]
+
+                    if id_cliente not in clientes:
+                        clientes[id_cliente] = {
+                            'nome': nome_cliente,
+                            'pedidos': []
+                        }
+                    if id_pedido:  # Verifica se há pedido
+                        clientes[id_cliente]['pedidos'].append({
+                            'id_pedido': id_pedido,
+                            'data_pedido': data_pedido,
+                            'valor_total': valor_total,
+                            'status': status
+                        })
+
+        return render_template('partials/pedidos_por_cliente.html', clientes=clientes)
+    except Exception as e:
+        current_app.logger.error(f"Erro ao listar pedidos por cliente: {str(e)}")
+        return "Erro ao listar pedidos por cliente.", 500
+
+
+
 
 @main.route('/logout')
 def logout():
